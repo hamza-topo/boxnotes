@@ -1,0 +1,409 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #14213d;
+  background: #f4efe6;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: #ffffff;
+  color: #14213d;
+}
+
+body {
+  min-width: 320px;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  outline: none;
+}
+
+.appShell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.hero {
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  max-width: 900px;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.heroText {
+  margin: 0;
+  max-width: 720px;
+  font-size: 0.9rem;
+  color: rgba(20, 33, 61, 0.75);
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border: 2px solid #111;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.searchWrap {
+  margin-bottom: 24px;
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 16px 18px;
+  border: 3px solid #111;
+  border-radius: 18px;
+  background: #fffdf8;
+  box-shadow: 4px 4px 0 #111;
+  font-size: 1rem;
+}
+
+.searchInput::placeholder {
+  color: rgba(20, 33, 61, 0.55);
+}
+
+.dashboardLayout {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.panel {
+  border: 3px solid #111;
+  border-radius: 20px;
+  background: #f8f6f1;
+  box-shadow: 5px 5px 0 #111;
+}
+
+.stickyPanel {
+  position: sticky;
+  top: 20px;
+}
+
+.noteForm {
+  padding: 18px;
+}
+
+.formHeader {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.formHeader h2 {
+  margin: 0 0 4px;
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.formHeader p {
+  margin: 0;
+  color: rgba(20, 33, 61, 0.7);
+  font-size: 0.95rem;
+}
+
+.formBadge {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 3px solid #111;
+  border-radius: 16px;
+  background: #ffd54f;
+  box-shadow: 3px 3px 0 #111;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.tagSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tagButton {
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.tagButton:hover {
+  transform: translateY(-1px);
+}
+
+.tagSelected {
+  box-shadow: 2px 2px 0 #111;
+}
+
+.fieldGroup {
+  margin-bottom: 10px;
+}
+
+.fieldGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.fieldGroup input,
+.fieldGroup textarea,
+.fieldGroup select {
+  width: 100%;
+  border: 3px solid #111;
+  border-radius: 14px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #14213d;
+}
+
+.fieldGroup textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.saveButton {
+  width: 100%;
+  border: 3px solid #111;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #111;
+  color: #fff8e7;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #111;
+  transition: transform 0.15s ease;
+}
+
+.saveButton:hover {
+  transform: translate(-2px, -2px);
+}
+
+.resultsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+
+.resultsPanel {
+  padding: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.resultsHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.resultsCount {
+  border: 2px solid #111;
+  border-radius: 999px;
+  background: #fff;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.notesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.noteCard {
+  border: 3px solid #111;
+  border-radius: 20px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 4px 4px 0 #111;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.noteCard:hover {
+  transform: translate(-2px, -2px);
+  background: #fffdfa;
+}
+
+.noteCardTop {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.noteTitle {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.noteReminder {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(20, 33, 61, 0.82);
+}
+
+.noteDivider {
+  width: 100%;
+  height: 2px;
+  background: #111;
+  margin: 14px 0;
+  opacity: 0.18;
+}
+
+.noteDescription {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(20, 33, 61, 0.74);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid #111;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.tag-linux {
+  background: #d9f99d;
+}
+
+.tag-git {
+  background: #fdba74;
+}
+
+.tag-php {
+  background: #c4b5fd;
+}
+
+.tag-javascript {
+  background: #fde68a;
+}
+
+.tag-devops {
+  background: #93c5fd;
+}
+
+.tag-career {
+  background: #ddd6fe;
+}
+
+.emptyState {
+  border: 3px dashed #111;
+  border-radius: 20px;
+  background: #fff;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.emptyState h3 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+}
+
+.emptyState p {
+  margin: 0;
+  color: rgba(20, 33, 61, 0.7);
+}
+
+@media (max-width: 1100px) {
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .stickyPanel {
+    position: static;
+  }
+
+  .notesGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .searchWrap {
+    margin-left: 0;
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .appShell {
+    padding: 20px 14px 32px;
+  }
+
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+}
