@@ -123,15 +123,15 @@ button {
   margin-bottom: 18px;
 }
 
-.topHeader > :first-child {
+.topHeader> :first-child {
   justify-self: start;
 }
 
-.topHeader > :nth-child(2) {
+.topHeader> :nth-child(2) {
   justify-self: center;
 }
 
-.topHeader > :last-child {
+.topHeader> :last-child {
   justify-self: end;
 }
 
@@ -249,7 +249,7 @@ button {
   display: grid;
   grid-template-columns: 380px minmax(0, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .resultsColumn {
@@ -273,6 +273,7 @@ button {
 .stickyPanel {
   position: sticky;
   top: 20px;
+  height: fit-content;
 }
 
 /* =========================
@@ -304,6 +305,9 @@ button {
 
 .noteForm {
   padding: 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .formHeader {
@@ -475,6 +479,7 @@ button {
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface);
+  flex: 1;
 }
 
 .editorWrapper .ck-editor__editable {
@@ -487,7 +492,7 @@ button {
   background: var(--panel) !important;
 }
 
-.editorWrapper .ck-editor__main > .ck-editor__editable {
+.editorWrapper .ck-editor__main>.ck-editor__editable {
   border: none !important;
   box-shadow: none !important;
   padding: 12px 14px !important;
@@ -497,15 +502,16 @@ button {
 
 .saveButton {
   width: 100%;
-  border: 3px solid var(--border-color);
+  border: 3px solid #111;
   border-radius: 16px;
   padding: 14px 16px;
-  background: var(--button-dark);
-  color: var(--button-dark-text);
-  font-weight: 900;
+  background: #111;
+  color: #fff8e7;
+  font-weight: 800;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
+  box-shadow: 4px 4px 0 #111;
   transition: transform 0.15s ease;
+  margin-top: auto;
 }
 
 /* =========================
@@ -806,9 +812,9 @@ button {
   }
 
   .brandMini,
-  .topHeader > :first-child,
-  .topHeader > :nth-child(2),
-  .topHeader > :last-child {
+  .topHeader> :first-child,
+  .topHeader> :nth-child(2),
+  .topHeader> :last-child {
     justify-self: start;
   }
 
