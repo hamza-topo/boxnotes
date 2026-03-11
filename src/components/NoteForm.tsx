@@ -91,7 +91,7 @@ export default function NoteForm({ onAddNote }: Props) {
 
         <div className="editorWrapper">
           <CKEditor
-            editor={ClassicEditor}
+            editor={ClassicEditor as any}
             data={description}
             onChange={(_, editor) => {
               const data = editor.getData();
