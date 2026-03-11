@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AuthModal from "./auth/AuthModal";
 import { useAuth } from "../context/AuthContext";
-
+import ThemeToggle from "./ThemeToggle";
 type AuthMode = "login" | "register";
 
 export default function Header() {
@@ -26,6 +26,9 @@ export default function Header() {
   return (
     <>
       <header className="topHeader">
+        <div className="headerActions">
+          <ThemeToggle />
+        </div>
         <div className="brandMini">
           <span className="eyebrow">Sketch Notes</span>
         </div>
