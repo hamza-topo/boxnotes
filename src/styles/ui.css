@@ -605,6 +605,45 @@ button {
   color: var(--muted);
 }
 
+
+.paginationBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.paginationButton {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 12px;
+  border: 3px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+}
+
+.paginationButtonActive {
+  background: var(--button-dark);
+  color: var(--button-dark-text);
+}
+
+.paginationButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* =========================
    EMPTY STATE
 ========================= */
