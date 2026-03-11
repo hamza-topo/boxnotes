@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import type { Note, NoteCategory } from "../types/note";
 
 type Props = {
@@ -23,18 +25,21 @@ export default function NoteForm({ onAddNote }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !quickReminder || !description) return;
+    if (!title.trim() || !quickReminder.trim() || !description.trim()) {
+      return;
+    }
 
     onAddNote({
       id: Date.now(),
-      title,
-      quickReminder,
+      title: title.trim(),
+      quickReminder: quickReminder.trim(),
       category,
-      description,
+      description: description.trim(),
     });
 
     setTitle("");
     setQuickReminder("");
+    setCategory("linux");
     setDescription("");
   };
 
@@ -48,23 +53,19 @@ export default function NoteForm({ onAddNote }: Props) {
         </div>
       </div>
 
-      {/* CATEGORY TAG PICKER */}
       <div className="tagSelector">
         {categories.map((tag) => (
           <button
             key={tag}
             type="button"
             onClick={() => setCategory(tag)}
-            className={`tag tag-${tag} tagButton ${
-              category === tag ? "tagSelected" : ""
-            }`}
+            className={`tag tag-${tag} tagButton ${category === tag ? "tagSelected" : ""}`}
           >
             #{tag}
           </button>
         ))}
       </div>
 
-      {/* TITLE */}
       <div className="fieldGroup">
         <label>Title</label>
         <input
@@ -75,7 +76,6 @@ export default function NoteForm({ onAddNote }: Props) {
         />
       </div>
 
-      {/* QUICK REMINDER */}
       <div className="fieldGroup">
         <label>Quick reminder</label>
         <input
@@ -86,15 +86,19 @@ export default function NoteForm({ onAddNote }: Props) {
         />
       </div>
 
-      {/* DESCRIPTION */}
       <div className="fieldGroup">
         <label>Description</label>
-        <textarea
-          rows={6}
-          placeholder="Write the useful command, explanation, context..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+
+        <div className="editorWrapper">
+          <CKEditor
+            editor={ClassicEditor}
+            data={description}
+            onChange={(_, editor) => {
+              const data = editor.getData();
+              setDescription(data);
+            }}
+          />
+        </div>
       </div>
 
       <button className="saveButton" type="submit">

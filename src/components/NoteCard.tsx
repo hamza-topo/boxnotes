@@ -16,7 +16,10 @@ export default function NoteCard({ note }: Props) {
 
       <div className="noteDivider" />
 
-      <p className="noteDescription">{note.description}</p>
+      <div
+        className="noteDescription"
+        dangerouslySetInnerHTML={{ __html: note.description }}
+      />
     </article>
   );
 }
