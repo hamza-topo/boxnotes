@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Note } from "../types/note";
 
 type Props = {
@@ -17,13 +18,43 @@ function formatDate(dateString: string | null | undefined) {
   });
 }
 
+function stripHtml(html: string | null | undefined) {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength).trim()}...`;
+}
+
 export default function NoteCard({ note, loading = false }: Props) {
+  const [copied, setCopied] = useState(false);
+
   const createdAt = formatDate(note?.createdAt);
   const updatedAt = formatDate(note?.updatedAt);
 
+  const commandText = note?.bullet?.trim() || "No command yet";
+  const previewText = truncateText(stripHtml(note?.content), 90);
+
+  const handleCopy = async () => {
+    if (!note?.bullet?.trim()) return;
+
+    try {
+      await navigator.clipboard.writeText(note.bullet.trim());
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 1400);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  };
+
   return (
-    <article className={`noteCard ${loading ? "isLoading" : ""}`}>
-      <div className="noteCardTop">
+    <article className={`noteCard noteCardSnippet ${loading ? "isLoading" : ""}`}>
+      <div className="noteCardHead">
         {loading ? (
           <span className="skeletonBlock skeletonTag" />
         ) : (
@@ -38,24 +69,32 @@ export default function NoteCard({ note, loading = false }: Props) {
       )}
 
       {loading ? (
-        <div className="skeletonBlock skeletonReminder" />
-      ) : note?.bullet ? (
-        <p className="noteReminder">{note.bullet}</p>
-      ) : null}
+        <div className="skeletonBlock skeletonLine skeletonLineLg" />
+      ) : (
+        <div className="noteCommandRow">
+          <code className="noteCommandInline">{commandText}</code>
 
-      <div className="noteDivider" />
+          <button
+            type="button"
+            className={`noteCopyButton ${copied ? "isCopied" : ""}`}
+            onClick={handleCopy}
+            aria-label="Copy command"
+            title={copied ? "Copied!" : "Copy command"}
+            disabled={!note?.bullet?.trim()}
+          >
+            {copied ? "✓" : "📋"}
+          </button>
+        </div>
+      )}
 
       {loading ? (
-        <div className="noteDescription">
+        <div className="noteDescriptionPreview">
           <div className="skeletonBlock skeletonLine skeletonLineLg" />
-          <div className="skeletonBlock skeletonLine" />
-          <div className="skeletonBlock skeletonLine skeletonLineSm" />
         </div>
       ) : (
-        <div
-          className="noteDescription"
-          dangerouslySetInnerHTML={{ __html: note?.content || "" }}
-        />
+        <p className="noteDescriptionPreview">
+          {previewText || "No description preview available."}
+        </p>
       )}
 
       <div className="noteMeta">
