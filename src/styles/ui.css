@@ -639,10 +639,65 @@ button {
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
+.noteCard:hover {
+  transform: translate(-2px, -2px);
+  background: var(--surface-hover);
+}
+
+.noteCardSnippet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 220px;
+}
+
+.noteCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.noteTitle {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.15;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.noteCommandInline {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  border: 2px solid var(--divider);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noteDescriptionPreview {
+  margin: 0;
+  font-size: 0.91rem;
+  color: var(--muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.7em;
+}
+
 .noteMeta {
-  margin-top: 1rem;
+  margin-top: auto;
   padding-top: 0.75rem;
-  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+  border-top: 1px dashed var(--divider);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -650,18 +705,13 @@ button {
 
 .noteDate {
   margin: 0;
-  font-size: 0.85rem;
-  color: #5f6368;
+  font-size: 0.84rem;
+  color: var(--muted);
 }
 
 .noteDate span {
-  font-weight: 500;
-  color: #222;
-}
-
-.noteCard:hover {
-  transform: translate(-2px, -2px);
-  background: var(--surface-hover);
+  font-weight: 700;
+  color: var(--text);
 }
 
 .noteCardTop {
@@ -698,6 +748,59 @@ button {
   color: var(--muted);
 }
 
+.noteCommandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.noteCommandInline {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  border: 2px solid var(--divider);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.noteCopyButton {
+  flex-shrink: 0;
+  min-width: 72px;
+  height: 40px;
+  padding: 0 12px;
+  border: 3px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.noteCopyButton:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+}
+
+.noteCopyButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.noteCopyButton.isCopied {
+  background: #d9f99d;
+  color: #111111;
+}
 
 .paginationBar {
   display: flex;
@@ -749,6 +852,7 @@ button {
   box-shadow: var(--shadow-md);
   margin-bottom: 24px;
 }
+
 .focus-audio-row {
   display: flex;
   align-items: center;
