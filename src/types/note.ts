@@ -1,9 +1,17 @@
-export type NoteCategory = "linux" | "git" | "php" | "javascript" | "devops" | "career";
+export type NoteTag =
+  | "linux"
+  | "git"
+  | "php"
+  | "javascript"
+  | "devops"
+  | "career";
 
 export type Note = {
   id: number;
   title: string;
-  quickReminder: string;
-  category: NoteCategory;
-  description: string;
+  bullet: string | null;
+  content: string;
+  tag: NoteTag;
+  createdAt: string;
+  updatedAt: string | null;
 };

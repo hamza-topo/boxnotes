@@ -4,9 +4,21 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import NoteForm from "./components/NoteForm";
 import NotesList from "./components/NotesList";
-import { initialNotes } from "./data/notes";
 import type { Note } from "./types/note";
 import "./styles/ui.css";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8082";
+const ITEMS_PER_PAGE = 4;
+
+type NotesApiResponse = {
+  data: Note[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+};
 
 function stripHtml(html: string) {
   const temp = document.createElement("div");
@@ -14,60 +26,129 @@ function stripHtml(html: string) {
   return temp.textContent || temp.innerText || "";
 }
 
-const ITEMS_PER_PAGE = 4;
-
 export default function App() {
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  const orderedNotes = useMemo(() => {
-    return [...notes].sort((a, b) => b.id - a.id);
-  }, [notes]);
+  const [serverTotalPages, setServerTotalPages] = useState(1);
+  const [serverTotalNotes, setServerTotalNotes] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const filteredNotes = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    if (!query) return orderedNotes;
+    if (!query) return notes;
 
-    return orderedNotes.filter((note) => {
-      const plainDescription = stripHtml(note.description).toLowerCase();
+    return notes.filter((note) => {
+      const plainContent = stripHtml(note.content).toLowerCase();
 
       return (
         note.title.toLowerCase().includes(query) ||
-        note.quickReminder.toLowerCase().includes(query) ||
-        plainDescription.includes(query) ||
-        note.category.toLowerCase().includes(query)
+        (note.bullet ?? "").toLowerCase().includes(query) ||
+        plainContent.includes(query) ||
+        note.tag.toLowerCase().includes(query)
       );
     });
-  }, [orderedNotes, search]);
+  }, [notes, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredNotes.length / ITEMS_PER_PAGE));
+  const totalPages = search.trim()
+    ? Math.max(1, Math.ceil(filteredNotes.length / ITEMS_PER_PAGE))
+    : Math.max(1, serverTotalPages);
+
+  useEffect(() => {
+    const loadNotes = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const pageToLoad = search.trim() ? 1 : currentPage;
+        const response = await fetch(`${API_BASE_URL}/api/notes?page=${pageToLoad}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch notes");
+        }
+
+        const json: NotesApiResponse = await response.json();
+
+        setNotes(json.data);
+        setServerTotalPages(json.pagination.pages || 1);
+        setServerTotalNotes(json.pagination.total || 0);
+      } catch (err) {
+        setError("Failed to load notes.");
+        setNotes([]);
+        setServerTotalPages(1);
+        setServerTotalNotes(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNotes();
+  }, [currentPage, search]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, notes]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
+  }, [search]);
 
   const paginatedNotes = useMemo(() => {
+    if (!search.trim()) {
+      return notes;
+    }
+
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
-    return filteredNotes.slice(start, end);
-  }, [filteredNotes, currentPage]);
 
-  const handleAddNote = (note: Note) => {
-    setNotes((prev) => [note, ...prev]);
+    return filteredNotes.slice(start, end);
+  }, [notes, filteredNotes, currentPage, search]);
+
+  const handleAddNote = async (note: Note) => {
     setCurrentPage(1);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: note.title,
+          bullet: note.bullet,
+          content: note.content,
+          tag: note.tag,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create note");
+      }
+
+      const created = await response.json();
+
+      if (search.trim()) {
+        setNotes((prev) => [created.note, ...prev]);
+      } else {
+        const refreshResponse = await fetch(`${API_BASE_URL}/api/notes?page=1`);
+
+        if (!refreshResponse.ok) {
+          throw new Error("Failed to refresh notes");
+        }
+
+        const refreshJson: NotesApiResponse = await refreshResponse.json();
+        setNotes(refreshJson.data);
+        setServerTotalPages(refreshJson.pagination.pages || 1);
+        setServerTotalNotes(refreshJson.pagination.total || 0);
+      }
+    } catch (err) {
+      setError("Failed to create note.");
+    }
   };
 
   const visiblePages = useMemo(() => {
     return Array.from({ length: totalPages }, (_, index) => index + 1);
   }, [totalPages]);
+
+  const displayedCount = search.trim() ? filteredNotes.length : serverTotalNotes;
 
   return (
     <main className="appShell">
@@ -97,13 +178,24 @@ export default function App() {
                 <h2>Results</h2>
               </div>
               <div className="resultsCount">
-                {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}
+                {displayedCount} {displayedCount === 1 ? "note" : "notes"}
               </div>
             </div>
 
-            <NotesList notes={paginatedNotes} />
+            {loading ? (
+              <div className="emptyState">
+                <h3>Loading notes...</h3>
+              </div>
+            ) : error ? (
+              <div className="emptyState">
+                <h3>Something went wrong</h3>
+                <p>{error}</p>
+              </div>
+            ) : (
+              <NotesList notes={paginatedNotes} />
+            )}
 
-            {filteredNotes.length > ITEMS_PER_PAGE && (
+            {!loading && !error && totalPages > 1 && (
               <div className="paginationBar">
                 <button
                   type="button"
@@ -131,9 +223,7 @@ export default function App() {
                 <button
                   type="button"
                   className="paginationButton"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                  }
+                  onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
                   aria-label="Next page"
                 >

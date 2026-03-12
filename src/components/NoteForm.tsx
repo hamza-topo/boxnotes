@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import type { Note, NoteCategory } from "../types/note";
+import type { Note, NoteTag } from "../types/note";
 
 type Props = {
   onAddNote: (note: Note) => void;
 };
 
-const categories: NoteCategory[] = [
+const tags: NoteTag[] = [
   "linux",
   "git",
   "php",
@@ -18,29 +18,31 @@ const categories: NoteCategory[] = [
 
 export default function NoteForm({ onAddNote }: Props) {
   const [title, setTitle] = useState("");
-  const [quickReminder, setQuickReminder] = useState("");
-  const [category, setCategory] = useState<NoteCategory>("linux");
-  const [description, setDescription] = useState("");
+  const [bullet, setBullet] = useState("");
+  const [tag, setTag] = useState<NoteTag>("linux");
+  const [content, setContent] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim() || !quickReminder.trim() || !description.trim()) {
+    if (!title.trim() || !content.trim()) {
       return;
     }
 
     onAddNote({
       id: Date.now(),
       title: title.trim(),
-      quickReminder: quickReminder.trim(),
-      category,
-      description: description.trim(),
+      bullet: bullet.trim() || null,
+      tag,
+      content: content.trim(),
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
     });
 
     setTitle("");
-    setQuickReminder("");
-    setCategory("linux");
-    setDescription("");
+    setBullet("");
+    setTag("linux");
+    setContent("");
   };
 
   return (
@@ -54,14 +56,14 @@ export default function NoteForm({ onAddNote }: Props) {
       </div>
 
       <div className="tagSelector">
-        {categories.map((tag) => (
+        {tags.map((item) => (
           <button
-            key={tag}
+            key={item}
             type="button"
-            onClick={() => setCategory(tag)}
-            className={`tag tag-${tag} tagButton ${category === tag ? "tagSelected" : ""}`}
+            onClick={() => setTag(item)}
+            className={`tag tag-${item} tagButton ${tag === item ? "tagSelected" : ""}`}
           >
-            #{tag}
+            #{item}
           </button>
         ))}
       </div>
@@ -81,8 +83,8 @@ export default function NoteForm({ onAddNote }: Props) {
         <input
           type="text"
           placeholder="Ex: Use -p host:container"
-          value={quickReminder}
-          onChange={(e) => setQuickReminder(e.target.value)}
+          value={bullet}
+          onChange={(e) => setBullet(e.target.value)}
         />
       </div>
 
@@ -92,10 +94,9 @@ export default function NoteForm({ onAddNote }: Props) {
         <div className="editorWrapper">
           <CKEditor
             editor={ClassicEditor as any}
-            data={description}
+            data={content}
             onChange={(_, editor) => {
-              const data = editor.getData();
-              setDescription(data);
+              setContent(editor.getData());
             }}
           />
         </div>
