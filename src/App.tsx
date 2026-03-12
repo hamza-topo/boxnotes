@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import NoteForm from "./components/NoteForm";
+import FocusAudioBar from "./components/FocusAudioBar";
 import NotesList from "./components/NotesList";
 import type { Note } from "./types/note";
 import "./styles/ui.css";
@@ -181,6 +182,7 @@ export default function App() {
         </aside>
 
         <section className="resultsColumn">
+          <FocusAudioBar />
           <SearchBar value={search} onChange={setSearch} />
 
           <section className="panel resultsPanel">
