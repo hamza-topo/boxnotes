@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
@@ -64,7 +63,6 @@ export default function App() {
         setError("");
 
         const pageToLoad = search.trim() ? 1 : currentPage;
-
         const startTime = Date.now();
 
         const response = await fetch(`${API_BASE_URL}/api/notes?page=${pageToLoad}`);
@@ -87,7 +85,7 @@ export default function App() {
         setNotes(json.data);
         setServerTotalPages(json.pagination.pages || 1);
         setServerTotalNotes(json.pagination.total || 0);
-      } catch (err) {
+      } catch {
         setError("Failed to load notes.");
         setNotes([]);
         setServerTotalPages(1);
@@ -152,7 +150,7 @@ export default function App() {
         setServerTotalPages(refreshJson.pagination.pages || 1);
         setServerTotalNotes(refreshJson.pagination.total || 0);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to create note.");
     }
   };
@@ -182,8 +180,13 @@ export default function App() {
         </aside>
 
         <section className="resultsColumn">
-          <FocusAudioBar />
-          <SearchBar value={search} onChange={setSearch} />
+          <div className="resultsTopSticky">
+            <FocusAudioBar />
+
+            <div className="searchWrap">
+              <SearchBar value={search} onChange={setSearch} />
+            </div>
+          </div>
 
           <section className="panel resultsPanel">
             <div className="resultsHeader">
@@ -191,6 +194,7 @@ export default function App() {
                 <p className="eyebrow">Library</p>
                 <h2>Results</h2>
               </div>
+
               <div className="resultsCount">
                 {displayedCount} {displayedCount === 1 ? "note" : "notes"}
               </div>
@@ -221,8 +225,9 @@ export default function App() {
                   <button
                     key={page}
                     type="button"
-                    className={`paginationButton ${currentPage === page ? "paginationButtonActive" : ""
-                      }`}
+                    className={`paginationButton ${
+                      currentPage === page ? "paginationButtonActive" : ""
+                    }`}
                     onClick={() => setCurrentPage(page)}
                   >
                     {page}
@@ -232,7 +237,9 @@ export default function App() {
                 <button
                   type="button"
                   className="paginationButton"
-                  onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
                   disabled={currentPage === totalPages}
                   aria-label="Next page"
                 >
