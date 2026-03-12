@@ -63,6 +63,9 @@ export default function App() {
         setError("");
 
         const pageToLoad = search.trim() ? 1 : currentPage;
+
+        const startTime = Date.now();
+
         const response = await fetch(`${API_BASE_URL}/api/notes?page=${pageToLoad}`);
 
         if (!response.ok) {
@@ -70,6 +73,15 @@ export default function App() {
         }
 
         const json: NotesApiResponse = await response.json();
+
+        const elapsed = Date.now() - startTime;
+        const minimumLoadingTime = 800;
+
+        if (elapsed < minimumLoadingTime) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, minimumLoadingTime - elapsed)
+          );
+        }
 
         setNotes(json.data);
         setServerTotalPages(json.pagination.pages || 1);
@@ -182,17 +194,13 @@ export default function App() {
               </div>
             </div>
 
-            {loading ? (
-              <div className="emptyState">
-                <h3>Loading notes...</h3>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="emptyState">
                 <h3>Something went wrong</h3>
                 <p>{error}</p>
               </div>
             ) : (
-              <NotesList notes={paginatedNotes} />
+              <NotesList notes={paginatedNotes} loading={loading} />
             )}
 
             {!loading && !error && totalPages > 1 && (
@@ -211,9 +219,8 @@ export default function App() {
                   <button
                     key={page}
                     type="button"
-                    className={`paginationButton ${
-                      currentPage === page ? "paginationButtonActive" : ""
-                    }`}
+                    className={`paginationButton ${currentPage === page ? "paginationButtonActive" : ""
+                      }`}
                     onClick={() => setCurrentPage(page)}
                   >
                     {page}
