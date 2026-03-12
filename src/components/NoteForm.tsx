@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import type { Note, NoteTag } from "../types/note";
+import DevEditor from "./DevEditor";
 
 type Props = {
   onAddNote: (note: Note) => void;
@@ -91,15 +90,11 @@ export default function NoteForm({ onAddNote }: Props) {
       <div className="fieldGroup">
         <label>Description</label>
 
-        <div className="editorWrapper">
-          <CKEditor
-            editor={ClassicEditor as any}
-            data={content}
-            onChange={(_, editor) => {
-              setContent(editor.getData());
-            }}
-          />
-        </div>
+        <DevEditor
+          value={content}
+          onChange={setContent}
+          language={tag}
+        />
       </div>
 
       <button className="saveButton" type="submit">

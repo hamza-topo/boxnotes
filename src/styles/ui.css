@@ -502,30 +502,127 @@ button {
   min-height: 140px;
 }
 
-.editorWrapper {
+.devEditorShell {
   border: 3px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
-  background: var(--surface);
-  flex: 1;
+  background: #0f1722;
+  box-shadow: var(--shadow-sm);
 }
 
-.editorWrapper .ck-editor__editable {
-  min-height: 180px;
+.devEditorTopbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #0a1018;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
 }
 
-.editorWrapper .ck-toolbar {
+.devEditorDots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.devEditorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.devEditorDotRed {
+  background: #ff5f57;
+}
+
+.devEditorDotYellow {
+  background: #febc2e;
+}
+
+.devEditorDotGreen {
+  background: #28c840;
+}
+
+.devEditorFilename {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(230, 237, 243, 0.72);
+}
+
+.devEditorBody {
+  background: #0f1722;
+}
+
+/* CodeMirror container */
+.devEditorBody .cm-editor {
+  background: #0f1722 !important;
+  color: #e6edf3 !important;
   border: none !important;
-  border-bottom: 2px solid var(--border-color) !important;
-  background: var(--panel) !important;
+  outline: none !important;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
 }
 
-.editorWrapper .ck-editor__main>.ck-editor__editable {
+.devEditorBody .cm-editor.cm-focused {
+  outline: none !important;
+}
+
+/* Main scroll area */
+.devEditorBody .cm-scroller {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  line-height: 1.7;
+  padding: 0;
+}
+
+/* Content */
+.devEditorBody .cm-content {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 14px;
+  padding: 16px 18px !important;
+  caret-color: #58a6ff;
+}
+
+/* Cursor */
+.devEditorBody .cm-cursor {
+  border-left-color: #58a6ff !important;
+}
+
+/* Placeholder */
+.devEditorBody .cm-placeholder {
+  color: rgba(230, 237, 243, 0.38) !important;
+  font-style: normal;
+}
+
+/* Selection */
+.devEditorBody .cm-selectionBackground,
+.devEditorBody ::selection {
+  background: rgba(88, 166, 255, 0.22) !important;
+}
+
+/* Active line off */
+.devEditorBody .cm-activeLine {
+  background: transparent !important;
+}
+
+/* Gutters off / clean */
+.devEditorBody .cm-gutters {
+  background: #0f1722 !important;
+  color: rgba(230, 237, 243, 0.3) !important;
   border: none !important;
-  box-shadow: none !important;
-  padding: 12px 14px !important;
-  background: var(--surface) !important;
-  color: var(--text) !important;
+}
+
+/* Tooltip / autocomplete safety */
+.devEditorBody .cm-tooltip {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111827 !important;
+  color: #e6edf3 !important;
+}
+
+/* Better height harmony inside form */
+.fieldGroup .devEditorShell {
+  margin-top: 2px;
 }
 
 .saveButton {
