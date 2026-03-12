@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+// src/App.tsx
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import NoteForm from "./components/NoteForm";
@@ -13,16 +14,23 @@ function stripHtml(html: string) {
   return temp.textContent || temp.innerText || "";
 }
 
+const ITEMS_PER_PAGE = 4;
+
 export default function App() {
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const orderedNotes = useMemo(() => {
+    return [...notes].sort((a, b) => b.id - a.id);
+  }, [notes]);
 
   const filteredNotes = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    if (!query) return notes;
+    if (!query) return orderedNotes;
 
-    return notes.filter((note) => {
+    return orderedNotes.filter((note) => {
       const plainDescription = stripHtml(note.description).toLowerCase();
 
       return (
@@ -32,11 +40,34 @@ export default function App() {
         note.category.toLowerCase().includes(query)
       );
     });
-  }, [notes, search]);
+  }, [orderedNotes, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredNotes.length / ITEMS_PER_PAGE));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, notes]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedNotes = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return filteredNotes.slice(start, end);
+  }, [filteredNotes, currentPage]);
 
   const handleAddNote = (note: Note) => {
     setNotes((prev) => [note, ...prev]);
+    setCurrentPage(1);
   };
+
+  const visiblePages = useMemo(() => {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }, [totalPages]);
 
   return (
     <main className="appShell">
@@ -70,7 +101,46 @@ export default function App() {
               </div>
             </div>
 
-            <NotesList notes={filteredNotes} />
+            <NotesList notes={paginatedNotes} />
+
+            {filteredNotes.length > ITEMS_PER_PAGE && (
+              <div className="paginationBar">
+                <button
+                  type="button"
+                  className="paginationButton"
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                >
+                  &lt;
+                </button>
+
+                {visiblePages.map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    className={`paginationButton ${
+                      currentPage === page ? "paginationButtonActive" : ""
+                    }`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  className="paginationButton"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  aria-label="Next page"
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
           </section>
         </section>
       </section>
