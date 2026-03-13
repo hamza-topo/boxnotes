@@ -164,14 +164,29 @@ a {
   height: fit-content;
 }
 
+.rightColumn {
+  min-width: 0;
+}
+
+.rightColumnTopTools {
+  position: sticky;
+  top: 16px;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+  pointer-events: auto;
+}
+
 /* =========================
    HEADER
 ========================= */
 
 .topHeader {
-  display: grid;
+  display: flex;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
+  justify-content:center;
   gap: 16px;
   margin-bottom: 18px;
 }
@@ -294,7 +309,7 @@ a {
 }
 
 .noteDeletePopoverCancel:hover {
-  background:var(--surface-hover);
+  background: var(--surface-hover);
 }
 
 .noteDeletePopoverCancel:active,
@@ -1107,7 +1122,7 @@ a {
   gap: 8px;
   animation: noteDeletePopoverIn 0.16s ease;
   opacity: 0.98;
-  top:5%;
+  top: 5%;
 }
 
 @keyframes noteDeletePopoverIn {
@@ -1952,12 +1967,13 @@ a {
   .newTagSaveButton {
     width: 100%;
   }
+
   .noteDeletePopover {
     left: 14px;
     right: 14px;
-    top:5%;
+    top: 5%;
     width: auto;
-    opacity:0.96;
+    opacity: 0.96;
   }
 }
 
