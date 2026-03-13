@@ -9,9 +9,12 @@ export type NoteTag =
 export type Note = {
   id: number;
   title: string;
-  bullet: string | null;
+  bullet?: string | null;
   content: string;
+  description?: string;
+  quickReminder?: string;
   tag: NoteTag;
-  createdAt: string;
-  updatedAt: string | null;
+  category?: string;
+  createdAt?: string;
+  updatedAt?: string | null;
 };
