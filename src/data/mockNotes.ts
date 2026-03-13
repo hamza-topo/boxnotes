@@ -1,24 +1,40 @@
 import type { Note } from "../types/note";
+
 export const mockNotes: Note[] = [
   {
     id: 1,
-    title: "Docker command",
+    title: "Docker port mapping",
+    bullet: "Expose local container port",
+    content: "Use docker run -p 8080:80 image_name to expose container ports locally.",
     description: "Run local container with mapped port",
-    quickReminder: "Use -p flag",
-    category: "devops"
+    quickReminder: "docker run -p 8080:80 image_name",
+    tag: "devops",
+    category: "devops",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
   },
   {
     id: 2,
-    title: "Git branch",
+    title: "Create feature branch",
+    bullet: "Start clean before coding",
+    content: "Use git checkout -b feature/my-branch before starting a new change.",
     description: "Create feature branch before coding",
-    quickReminder: "git checkout -b feature/name",
-    category: "git"
+    quickReminder: "git checkout -b feature/my-branch",
+    tag: "git",
+    category: "git",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
   },
   {
     id: 3,
-    title: "Linux grep",
+    title: "Recursive grep search",
+    bullet: "Search inside files recursively",
+    content: "Use grep -r 'keyword' . to search recursively from the current folder.",
     description: "grep -r keyword .",
-    quickReminder: "Case-sensitive search",
-    category: "linux"
-  }
-]
+    quickReminder: "grep -r 'keyword' .",
+    tag: "linux",
+    category: "linux",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
+  },
+];

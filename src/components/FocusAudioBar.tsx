@@ -67,7 +67,7 @@ export default function FocusAudioBar() {
         }
     };
 
-    const onReady = (event: YouTubeEvent<any>) => {
+    const onReady = (event: any) => {
         playerRef.current = event.target;
 
         try {
@@ -86,7 +86,7 @@ export default function FocusAudioBar() {
         }
     };
 
-    const onStateChange = (event: YouTubeEvent<number>) => {
+    const onStateChange = (event: any) => {
         const state = event.data;
 
         // YouTube states:
