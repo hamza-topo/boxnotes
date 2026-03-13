@@ -4,9 +4,16 @@ import NoteCard from "./NoteCard";
 type Props = {
   notes: Note[];
   loading?: boolean;
+  onEditNote?: (note: Note) => void;
+  onDeleteNote?: (note: Note) => void;
 };
 
-export default function NotesList({ notes, loading = false }: Props) {
+export default function NotesList({
+  notes,
+  loading = false,
+  onEditNote,
+  onDeleteNote,
+}: Props) {
   if (loading) {
     return (
       <div className="notesGrid">
@@ -29,7 +36,12 @@ export default function NotesList({ notes, loading = false }: Props) {
   return (
     <div className="notesGrid">
       {notes.map((note) => (
-        <NoteCard key={note.id} note={note} />
+        <NoteCard
+          key={note.id}
+          note={note}
+          onEdit={onEditNote}
+          onDelete={onDeleteNote}
+        />
       ))}
     </div>
   );

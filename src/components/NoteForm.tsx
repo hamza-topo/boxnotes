@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Note, NoteTag } from "../types/note";
 import DevEditor from "./DevEditor";
 
-type Props = {
-  onAddNote: (note: Note) => void;
+type NoteFormProps = {
+  onAddNote: (note: Note) => Promise<void>;
+  onUpdateNote: (note: Note) => Promise<void>;
+  editingNote: Note | null;
+  onCancelEdit: () => void;
 };
 
 const tags: NoteTag[] = [
@@ -15,42 +18,87 @@ const tags: NoteTag[] = [
   "career",
 ];
 
-export default function NoteForm({ onAddNote }: Props) {
+export default function NoteForm({
+  onAddNote,
+  onUpdateNote,
+  editingNote,
+  onCancelEdit,
+}: NoteFormProps) {
   const [title, setTitle] = useState("");
   const [bullet, setBullet] = useState("");
   const [tag, setTag] = useState<NoteTag>("linux");
   const [content, setContent] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  const isEditMode = Boolean(editingNote);
 
-    if (!title.trim() || !content.trim()) {
+  useEffect(() => {
+    if (!editingNote) {
       return;
     }
 
-    onAddNote({
-      id: Date.now(),
-      title: title.trim(),
-      bullet: bullet.trim() || null,
-      tag,
-      content: content.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
-    });
+    setTitle(editingNote.title ?? "");
+    setBullet(editingNote.bullet ?? "");
+    setTag((editingNote.tag as NoteTag) ?? "linux");
+    setContent(editingNote.content ?? "");
 
+    window.requestAnimationFrame(() => {
+      titleInputRef.current?.focus();
+    });
+  }, [editingNote]);
+
+  const resetForm = () => {
     setTitle("");
     setBullet("");
     setTag("linux");
     setContent("");
   };
 
+  const handleCancel = () => {
+    resetForm();
+    onCancelEdit();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title.trim() || !content.trim()) {
+      return;
+    }
+
+    const notePayload: Note = {
+      id: editingNote?.id ?? Date.now(),
+      title: title.trim(),
+      bullet: bullet.trim() || null,
+      tag,
+      content: content.trim(),
+      createdAt: editingNote?.createdAt ?? new Date().toISOString(),
+      updatedAt: isEditMode ? new Date().toISOString() : null,
+    };
+
+    if (isEditMode) {
+      await onUpdateNote(notePayload);
+    } else {
+      await onAddNote(notePayload);
+    }
+
+    resetForm();
+  };
+
   return (
-    <form className="noteForm" onSubmit={handleSubmit}>
+    <form
+      className={`noteForm ${isEditMode ? "isEditMode" : ""}`}
+      onSubmit={handleSubmit}
+    >
       <div className="formHeader">
-        <div className="formBadge">✎</div>
+        <div className="formBadge">{isEditMode ? "✎" : "✎"}</div>
         <div>
-          <h2>Create note</h2>
-          <p>Save useful commands, reminders and quick knowledge.</p>
+          <h2>{isEditMode ? "Update note" : "Create note"}</h2>
+          <p>
+            {isEditMode
+              ? "Update your command, reminder and quick knowledge."
+              : "Save useful commands, reminders and quick knowledge."}
+          </p>
         </div>
       </div>
 
@@ -68,8 +116,10 @@ export default function NoteForm({ onAddNote }: Props) {
       </div>
 
       <div className="fieldGroup">
-        <label>Title</label>
+        <label htmlFor="note-title">Title</label>
         <input
+          id="note-title"
+          ref={titleInputRef}
           type="text"
           placeholder="Ex: Docker port mapping"
           value={title}
@@ -78,8 +128,9 @@ export default function NoteForm({ onAddNote }: Props) {
       </div>
 
       <div className="fieldGroup">
-        <label>Quick reminder</label>
+        <label htmlFor="note-bullet">Quick reminder</label>
         <input
+          id="note-bullet"
           type="text"
           placeholder="Ex: Use -p host:container"
           value={bullet}
@@ -97,9 +148,21 @@ export default function NoteForm({ onAddNote }: Props) {
         />
       </div>
 
-      <button className="saveButton" type="submit">
-        Save note
-      </button>
+      <div className="noteFormActions">
+        {isEditMode && (
+          <button
+            className="noteFormSecondaryButton"
+            type="button"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        )}
+
+        <button className="saveButton" type="submit">
+          {isEditMode ? "Update note" : "Create note"}
+        </button>
+      </div>
     </form>
   );
 }

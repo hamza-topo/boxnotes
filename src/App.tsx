@@ -34,6 +34,7 @@ export default function App() {
   const [serverTotalNotes, setServerTotalNotes] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   const filteredNotes = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -113,6 +114,19 @@ export default function App() {
     return filteredNotes.slice(start, end);
   }, [notes, filteredNotes, currentPage, search]);
 
+  const refreshFirstPage = async () => {
+    const refreshResponse = await fetch(`${API_BASE_URL}/api/notes?page=1`);
+
+    if (!refreshResponse.ok) {
+      throw new Error("Failed to refresh notes");
+    }
+
+    const refreshJson: NotesApiResponse = await refreshResponse.json();
+    setNotes(refreshJson.data);
+    setServerTotalPages(refreshJson.pagination.pages || 1);
+    setServerTotalNotes(refreshJson.pagination.total || 0);
+  };
+
   const handleAddNote = async (note: Note) => {
     setCurrentPage(1);
 
@@ -139,20 +153,83 @@ export default function App() {
       if (search.trim()) {
         setNotes((prev) => [created.note, ...prev]);
       } else {
-        const refreshResponse = await fetch(`${API_BASE_URL}/api/notes?page=1`);
-
-        if (!refreshResponse.ok) {
-          throw new Error("Failed to refresh notes");
-        }
-
-        const refreshJson: NotesApiResponse = await refreshResponse.json();
-        setNotes(refreshJson.data);
-        setServerTotalPages(refreshJson.pagination.pages || 1);
-        setServerTotalNotes(refreshJson.pagination.total || 0);
+        await refreshFirstPage();
       }
     } catch {
       setError("Failed to create note.");
     }
+  };
+
+  const handleEditNote = (note: Note) => {
+    setEditingNote(note);
+
+    window.requestAnimationFrame(() => {
+      const formElement = document.querySelector(".noteForm");
+      formElement?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
+  const handleDeleteNote = async (note: Note) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/notes/${note.id}`, {
+        method: "DELETE",
+      });
+
+      setNotes((prev) => prev.filter((n) => n.id !== note.id));
+    } catch {
+      setError("Failed to delete note.");
+    }
+  };
+
+  const handleUpdateNote = async (updatedNote: Note) => {
+    if (!editingNote?.id) return;
+
+    try {
+      setError("");
+
+      const response = await fetch(`${API_BASE_URL}/api/notes/${editingNote.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: updatedNote.title,
+          bullet: updatedNote.bullet,
+          content: updatedNote.content,
+          tag: updatedNote.tag,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update note");
+      }
+
+      const json = await response.json();
+      const updatedFromApi = json.note ?? {
+        ...editingNote,
+        ...updatedNote,
+      };
+
+      if (search.trim()) {
+        setNotes((prev) =>
+          prev.map((note) => (note.id === editingNote.id ? updatedFromApi : note))
+        );
+      } else {
+        await refreshFirstPage();
+      }
+
+      setEditingNote(null);
+      setCurrentPage(1);
+    } catch {
+      setError("Failed to update note.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNote(null);
   };
 
   const visiblePages = useMemo(() => {
@@ -176,7 +253,12 @@ export default function App() {
 
       <section className="dashboardLayout">
         <aside className="panel stickyPanel">
-          <NoteForm onAddNote={handleAddNote} />
+          <NoteForm
+            onAddNote={handleAddNote}
+            onUpdateNote={handleUpdateNote}
+            editingNote={editingNote}
+            onCancelEdit={handleCancelEdit}
+          />
         </aside>
 
         <section className="resultsColumn">
@@ -206,7 +288,13 @@ export default function App() {
                 <p>{error}</p>
               </div>
             ) : (
-              <NotesList notes={paginatedNotes} loading={loading} />
+              <NotesList
+                notes={paginatedNotes}
+                loading={loading}
+                onEditNote={handleEditNote}
+                onDeleteNote={handleDeleteNote}
+
+              />
             )}
 
             {!loading && !error && totalPages > 1 && (
@@ -225,9 +313,8 @@ export default function App() {
                   <button
                     key={page}
                     type="button"
-                    className={`paginationButton ${
-                      currentPage === page ? "paginationButtonActive" : ""
-                    }`}
+                    className={`paginationButton ${currentPage === page ? "paginationButtonActive" : ""
+                      }`}
                     onClick={() => setCurrentPage(page)}
                   >
                     {page}

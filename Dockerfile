@@ -9,7 +9,7 @@ RUN npm install && chown -R node:node /app
 COPY . .
 
 RUN chown -R node:node /app
-
+RUN apk add --no-cache git
 USER node
 
 EXPOSE 5173

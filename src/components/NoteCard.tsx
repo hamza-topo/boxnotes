@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Pencil, Trash2, Clipboard, Check } from "lucide-react";
 import type { Note } from "../types/note";
 
 type Props = {
   note?: Note;
   loading?: boolean;
+  onEdit?: (note: Note) => void;
+  onDelete?: (note: Note) => void;
 };
 
 function formatDate(dateString: string | null | undefined) {
@@ -28,7 +31,12 @@ function truncateText(text: string, maxLength: number) {
   return `${text.slice(0, maxLength).trim()}...`;
 }
 
-export default function NoteCard({ note, loading = false }: Props) {
+export default function NoteCard({
+  note,
+  loading = false,
+  onEdit,
+  onDelete,
+}: Props) {
   const [copied, setCopied] = useState(false);
 
   const createdAt = formatDate(note?.createdAt);
@@ -36,6 +44,8 @@ export default function NoteCard({ note, loading = false }: Props) {
 
   const commandText = note?.bullet?.trim() || "No command yet";
   const previewText = truncateText(stripHtml(note?.content), 90);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
 
   const handleCopy = async () => {
     if (!note?.bullet?.trim()) return;
@@ -52,13 +62,114 @@ export default function NoteCard({ note, loading = false }: Props) {
     }
   };
 
+  const handleEdit = () => {
+    if (!note || loading) return;
+    onEdit?.(note);
+  };
+
+  const handleDeleteClick = () => {
+    setConfirmDelete(true);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDelete(false);
+    setDeleteInput("");
+  };
+
+  const handleConfirmDelete = () => {
+    if (!note) return;
+
+    if (deleteInput !== (note.bullet ?? "")) return;
+
+    onDelete?.(note);
+
+    setConfirmDelete(false);
+    setDeleteInput("");
+  };
+
   return (
     <article className={`noteCard noteCardSnippet ${loading ? "isLoading" : ""}`}>
       <div className="noteCardHead">
         {loading ? (
           <span className="skeletonBlock skeletonTag" />
         ) : (
-          <span className={`tag tag-${note?.tag}`}>#{note?.tag}</span>
+          <>
+            <span className={`tag tag-${note?.tag}`}>#{note?.tag}</span>
+
+            <div className="noteCardTools" aria-label="Note actions">
+              <button
+                type="button"
+                className="noteToolButton"
+                onClick={handleEdit}
+                aria-label="Edit note"
+                title="Edit note"
+              >
+                <Pencil size={15} strokeWidth={2.2} />
+              </button>
+
+              <button
+                type="button"
+                className="noteToolButton noteToolButtonDanger"
+                onClick={handleDeleteClick}
+                aria-label="Delete note"
+                title="Delete note"
+              >
+                <Trash2 size={15} strokeWidth={2.2} />
+              </button>
+              {confirmDelete && note && (
+                <div className="noteDeletePopover" role="dialog" aria-label="Delete note confirmation">
+                  <div className="noteDeletePopoverHeader">
+                    <p className="noteDeletePopoverTitle">Delete note</p>
+                    <button
+                      type="button"
+                      className="noteDeleteClose"
+                      onClick={handleCancelDelete}
+                      aria-label="Close delete confirmation"
+                      title="Close"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <p className="noteDeletePopoverText">
+                    Type the command below to confirm deletion.
+                  </p>
+
+                  <code className="noteDeletePopoverCode">
+                    {note.bullet?.trim() || "No command available"}
+                  </code>
+
+                  <input
+                    type="text"
+                    className="noteDeletePopoverInput"
+                    value={deleteInput}
+                    onChange={(e) => setDeleteInput(e.target.value)}
+                    placeholder="Type exact command"
+                    autoFocus
+                  />
+
+                  <div className="noteDeletePopoverActions">
+                    <button
+                      type="button"
+                      className="noteDeletePopoverCancel"
+                      onClick={handleCancelDelete}
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="button"
+                      className="noteDeletePopoverDanger"
+                      disabled={deleteInput !== (note.bullet ?? "")}
+                      onClick={handleConfirmDelete}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 
@@ -82,7 +193,11 @@ export default function NoteCard({ note, loading = false }: Props) {
             title={copied ? "Copied!" : "Copy command"}
             disabled={!note?.bullet?.trim()}
           >
-            {copied ? "✓" : "📋"}
+            {copied ? (
+              <Check size={16} strokeWidth={2.6} />
+            ) : (
+              <Clipboard size={16} strokeWidth={2.2} />
+            )}
           </button>
         </div>
       )}
