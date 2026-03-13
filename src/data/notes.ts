@@ -1,25 +1,40 @@
 import type { Note } from "../types/note";
 
-export const initialNotes: Note[] = [
+export const notes: Note[] = [
   {
     id: 1,
-    title: "Docker command",
+    title: "Docker port mapping",
+    bullet: "Expose local container port",
+    content: "Use docker run -p 8080:80 image_name to expose container ports locally.",
     quickReminder: "Run local container with mapped port",
     category: "devops",
     description: "Use docker run -p 8080:80 image_name to expose container ports locally.",
+    tag: "devops",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
   },
   {
     id: 2,
-    title: "Git branch",
+    title: "Create feature branch",
+    bullet: "Start clean before coding",
+    content: "Use git checkout -b feature/my-branch before starting a new change.",
     quickReminder: "Create feature branch before coding",
     category: "git",
     description: "Use git checkout -b feature/my-branch before starting a new change.",
+    tag: "git",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
   },
   {
     id: 3,
-    title: "Linux grep",
+    title: "Recursive grep search",
+    bullet: "Search recursively in files",
+    content: "Use grep -r 'keyword' . to search recursively from the current folder.",
     quickReminder: "Search recursively inside files",
     category: "linux",
     description: "Use grep -r 'keyword' . to search recursively from the current folder.",
+    tag: "linux",
+    createdAt: new Date().toISOString(),
+    updatedAt: null,
   },
 ];
