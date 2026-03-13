@@ -26,14 +26,18 @@ export default function Header() {
   return (
     <>
       <header className="topHeader">
-        <div className="headerActions">
+        {/* <div className="headerActions">
           <ThemeToggle />
-        </div>
+        </div> */}
         <div className="brandMini">
-          <span className="eyebrow">Sketch Notes</span>
+          {/* <span className="eyebrow"> */}
+            <div className="headerActions">
+              <ThemeToggle />
+            </div>
+          {/* </span> */}
         </div>
 
-        <div className="headerActions">
+        {/* <div className="headerActions">
           {loading ? null : user ? (
             <>
               <span className="userGreeting">Hi, {displayName}</span>
@@ -59,15 +63,15 @@ export default function Header() {
               </button>
             </>
           )}
-        </div>
+        </div> */}
       </header>
 
-      <AuthModal
+      {/* <AuthModal
         isOpen={isModalOpen}
         mode={mode}
         onClose={closeModal}
         onChangeMode={setMode}
-      />
+      /> */}
     </>
   );
 }

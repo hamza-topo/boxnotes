@@ -9,7 +9,7 @@ export default function SearchBar({ value, onChange }: Props) {
       <input
         className="searchInput"
         type="text"
-        placeholder="Search notes, commands, tags..."
+        placeholder="Find the command you forgot 5 minutes ago..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
